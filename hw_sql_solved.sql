@@ -85,23 +85,49 @@ FROM payment inner JOIN customer ON
 customer.customer_id = payment.customer_id
 group by full_name;
 
--- 7a. The music of Queen and Kris Kristofferson have seen an unlikely resurgence. As an unintended consequence, films starting with the letters K and Q have also soared in popularity. Use subqueries to display the titles of movies starting with the letters K and Q whose language is English.
+-- 7a. The music of Queen and Kris Kristofferson have seen an unlikely resurgence. As an unintended consequence, films starting with the letters K and Q have also soared in popularity. 
+-- Use subqueries to display the titles of movies starting with the letters K and Q whose language is English.
 select * from film;
 select * from language;
+-- using joins
 SELECT film.title, language.name
 FROM film 
 inner JOIN language ON film.language_id = language.language_id
 where film.title like "Q%" or film.title like "K%";
+-- using subqueries
+select title
+from film
+where title like ('Q%') or title like ('K%') and language_id in 
+    (
+	select language_id
+	from language
+	where language.name = 'English'
+    );
 
 -- 7b. Use subqueries to display all actors who appear in the film Alone Trip.
 select * from film;
 select * from film_actor;
 select * from actor;
+-- using joins
 SELECT film.title, actor.first_name, actor.last_name
 FROM film 
 inner JOIN film_actor ON film.film_id = film_actor.film_id
 inner JOIN actor ON film_actor.actor_id = actor.actor_id
 where film.title = "Alone Trip";
+-- using subqueries
+select first_name, last_name
+from actor
+where actor_id in 
+	(
+	select actor_id
+	from film_actor
+	where film_id in 
+		(
+		select film_id
+		from film
+		where title = "Alone Trip"
+        )
+	);
 
 -- 7c. You want to run an email marketing campaign in Canada, for which you will need the names and email addresses of all Canadian customers. Use joins to retrieve this information.
 select * from country;
